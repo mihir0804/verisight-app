@@ -4,25 +4,10 @@ import { useState, useEffect } from 'react';
 import { MapPin } from 'lucide-react';
 import { MoonIcon } from '@/components/icons/MoonIcon';
 
-type WeatherData = {
-  main: {
-    temp: number;
-  };
-  weather: {
-    main: string;
-  }[];
-  name: string;
-  sys: {
-    country: string;
-  };
-};
-
 export default function RealTimeInfoHeader() {
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
-  const [location, setLocation] = useState<{ city: string; country: string } | null>(null);
-  const [weather, setWeather] = useState<{ temp: number; description: string } | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [locationAvailable, setLocationAvailable] = useState(false);
 
   useEffect(() => {
     const updateClock = () => {
@@ -45,83 +30,27 @@ export default function RealTimeInfoHeader() {
   }, []);
   
   useEffect(() => {
-    const fetchWeatherData = async (latitude: number, longitude: number) => {
-      try {
-        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=4f31c19551e5952e4e6f3333f8d423c2&units=metric`);
-        if (!response.ok) {
-          // If the API fails for any reason (e.g., invalid key, rate limit), use fallback.
-          throw new Error('Weather data not available');
-        }
-
-        const data: WeatherData = await response.json();
-        setLocation({ city: data.name, country: data.sys.country });
-        setWeather({ temp: data.main.temp, description: data.weather[0].main });
-      } catch (error) {
-        console.error('Failed to fetch weather data, using fallback.', error);
-        // Fallback to a default if the API fails
-        setLocation({ city: 'Ahmedabad', country: 'IN' });
-        setWeather({ temp: 27, description: 'Clear' });
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          fetchWeatherData(position.coords.latitude, position.coords.longitude);
+        () => {
+          setLocationAvailable(true);
         },
-        (error) => {
-          console.error('Geolocation permission denied, using fallback.', error);
-          // If user denies permission, use fallback
-          setLocation({ city: 'Ahmedabad', country: 'IN' });
-          setWeather({ temp: 27, description: 'Clear' });
-          setLoading(false);
+        () => {
+          setLocationAvailable(false);
         }
       );
     } else {
-      console.log('Geolocation not available, using fallback.');
-      // Geolocation not supported, use fallback
-      setLocation({ city: 'Ahmedabad', country: 'IN' });
-      setWeather({ temp: 27, description: 'Clear' });
-      setLoading(false);
+      setLocationAvailable(false);
     }
   }, []);
-
-  if (loading) {
-    return (
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-card/50 p-4 animate-pulse">
-        <div className="flex items-center gap-3">
-          <MapPin className="h-5 w-5 text-muted-foreground" />
-          <div>
-            <div className="h-5 w-32 bg-muted rounded"></div>
-            <div className="h-4 w-24 bg-muted rounded mt-1"></div>
-          </div>
-        </div>
-        <div className="flex items-center gap-6">
-          <div className="text-right">
-            <div className="h-6 w-24 bg-muted rounded"></div>
-            <div className="h-4 w-16 bg-muted rounded mt-1"></div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 bg-muted rounded-full"></div>
-            <div>
-              <div className="h-5 w-12 bg-muted rounded"></div>
-              <div className="h-4 w-20 bg-muted rounded mt-1"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg border bg-card/50 p-4 animate-slide-up">
       <div className="flex items-center gap-3">
         <MapPin className="h-5 w-5 text-muted-foreground" />
         <div>
-          <p className="font-semibold">{location?.city}, {location?.country}</p>
-          <p className="text-sm text-muted-foreground">{date} Context</p>
+          <p className="font-semibold">{locationAvailable ? 'Local Context' : 'Location Not Available'}</p>
+          <p className="text-sm text-muted-foreground">{date}</p>
         </div>
       </div>
       <div className="flex items-center gap-6">
@@ -134,8 +63,8 @@ export default function RealTimeInfoHeader() {
         <div className="flex items-center gap-3">
           <MoonIcon className="h-8 w-8 text-accent" />
           <div>
-            <p className="font-semibold">{weather?.temp.toFixed(0)}°C</p>
-            <p className="text-sm text-muted-foreground">{weather?.description}</p>
+            <p className="font-semibold">--°C</p>
+            <p className="text-sm text-muted-foreground">Weather N/A</p>
           </div>
         </div>
       </div>
