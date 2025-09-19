@@ -45,10 +45,47 @@ export default function RealTimeInfoHeader() {
   }, []);
   
   useEffect(() => {
-    // Fallback to a default since API is unreliable
-    setLocation({ city: 'Ahmedabad', country: 'IN' });
-    setWeather({ temp: 27, description: 'Clear Night' });
-    setLoading(false);
+    const fetchWeatherData = async (latitude: number, longitude: number) => {
+      try {
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=4f31c19551e5952e4e6f3333f8d423c2&units=metric`);
+        if (!response.ok) {
+          // If the API fails for any reason (e.g., invalid key, rate limit), use fallback.
+          throw new Error('Weather data not available');
+        }
+
+        const data: WeatherData = await response.json();
+        setLocation({ city: data.name, country: data.sys.country });
+        setWeather({ temp: data.main.temp, description: data.weather[0].main });
+      } catch (error) {
+        console.error('Failed to fetch weather data, using fallback.', error);
+        // Fallback to a default if the API fails
+        setLocation({ city: 'Ahmedabad', country: 'IN' });
+        setWeather({ temp: 27, description: 'Clear' });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          fetchWeatherData(position.coords.latitude, position.coords.longitude);
+        },
+        (error) => {
+          console.error('Geolocation permission denied, using fallback.', error);
+          // If user denies permission, use fallback
+          setLocation({ city: 'Ahmedabad', country: 'IN' });
+          setWeather({ temp: 27, description: 'Clear' });
+          setLoading(false);
+        }
+      );
+    } else {
+      console.log('Geolocation not available, using fallback.');
+      // Geolocation not supported, use fallback
+      setLocation({ city: 'Ahmedabad', country: 'IN' });
+      setWeather({ temp: 27, description: 'Clear' });
+      setLoading(false);
+    }
   }, []);
 
   if (loading) {
