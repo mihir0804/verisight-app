@@ -45,52 +45,10 @@ export default function RealTimeInfoHeader() {
   }, []);
   
   useEffect(() => {
-    const fetchWeatherData = async (latitude: number, longitude: number) => {
-      try {
-        const apiKey = process.env.NEXT_PUBLIC_OPENWEATHERMAP_API_KEY;
-        if (!apiKey) {
-          throw new Error('OpenWeatherMap API key not configured.');
-        }
-        
-        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`);
-        
-        if (!response.ok) {
-          // If the API fails for any reason (e.g., invalid key, rate limit), use fallback.
-          throw new Error('Weather data not available');
-        }
-
-        const data: WeatherData = await response.json();
-        setLocation({ city: data.name, country: data.sys.country });
-        setWeather({ temp: data.main.temp, description: data.weather[0].main });
-      } catch (error) {
-        console.error("Error fetching location/weather data:", error);
-        // Fallback to a default if the API call fails or is not configured
-        setLocation({ city: 'Ahmedabad', country: 'IN' });
-        setWeather({ temp: 27, description: 'Clear Night' });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          fetchWeatherData(position.coords.latitude, position.coords.longitude);
-        },
-        (error) => {
-          console.error("Geolocation error:", error);
-          // Fallback for when geolocation is denied or fails
-          setLocation({ city: 'Ahmedabad', country: 'IN' });
-          setWeather({ temp: 27, description: 'Clear Night' });
-          setLoading(false);
-        }
-      );
-    } else {
-      // Fallback for browsers that don't support geolocation
-      setLocation({ city: 'Ahmedabad', country: 'IN' });
-      setWeather({ temp: 27, description: 'Clear Night' });
-      setLoading(false);
-    }
+    // Fallback to a default since API is unreliable
+    setLocation({ city: 'Ahmedabad', country: 'IN' });
+    setWeather({ temp: 27, description: 'Clear Night' });
+    setLoading(false);
   }, []);
 
   if (loading) {
