@@ -42,7 +42,7 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
-    --background: 0 0% 0%;
+    --background: 0 0% 4%;
     --foreground: 0 0% 98%;
     --card: 240 5% 10%;
     --card-foreground: 0 0% 98%;
@@ -66,7 +66,7 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --verdict-verified: 140 70% 45%;
+    --verdict-verified: 120 70% 45%;
     --verdict-misleading: 260 80% 60%;
     --verdict-false: 0 80% 60%;
     --sidebar-background: 240 5.9% 10%;
