@@ -48,4 +48,4 @@ To run the development server, execute the following command:
 npm run dev
 ```
 
-Open [http://localhost:9002]([http://localhost:9002](https://9000-firebase-studio-1758251888186.cluster-zkm2jrwbnbd4awuedc2alqxrpk.cloudworkstations.dev/?embedded=0&monospaceUid=360994)) with your browser to see the result.
+Open [http://localhost:9002]([http://localhost:9002](https://9000-firebase-studio-1758251888186.cluster-zkm2jrwbnbd4awuedc2alqxrpk.cloudworkstations.dev/?embedded=0&monospaceUid=360994) with your browser to see the result.
